@@ -92,9 +92,11 @@ chmod +x setup.sh
 
 ### 步驟 7: 複製配置檔案
 將以下檔案複製到 HOME 目錄：
-- `profile` → `~/.profile`
-- `bashrc` → `~/.bashrc`
-- `vimrc` → `~/.vimrc`
+- `profile` → `~/.profile` - 包含 Homebrew 環境、GNU 工具優先化、PATH 去重機制
+- `bashrc` → `~/.bashrc` - 包含自訂 prompt、Git prompt、bash completion、別名設定
+- `vimrc` → `~/.vimrc` - 包含語法高亮、自動縮排、UTF-8 編碼
+
+**注意**: 配置檔案中包含 Google Cloud SDK 的支援設定，但 Google Cloud SDK 不會自動安裝，需要的使用者請自行安裝。
 
 ## 互動提示
 

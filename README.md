@@ -28,7 +28,7 @@ cd macBrewEnv
   - Homebrew 環境初始化
   - GNU 工具優先化
   - PATH 去重機制
-  - Google Cloud SDK 整合
+  - 支援 Google Cloud SDK（需自行安裝）
 
 - **bashrc** - Bash 執行配置 (~/.bashrc)
   - 自訂命令提示字元
