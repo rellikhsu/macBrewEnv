@@ -1,13 +1,25 @@
 ########## ~/.profile ##########
 
-# 1. Homebrew（Apple Silicon）
+# 1. Detect and Initialize Homebrew (Apple Silicon vs Intel)
+#    This allows the same profile to work on both Apple Silicon (/opt/homebrew) and Intel (/usr/local)
 if [ -x /opt/homebrew/bin/brew ]; then
+    # Apple Silicon
     eval "$(/opt/homebrew/bin/brew shellenv)"
+elif [ -x /usr/local/bin/brew ]; then
+    # Intel Mac
+    eval "$(/usr/local/bin/brew shellenv)"
+fi
+
+# Ensure HOMEBREW_PREFIX is available for other scripts
+if [ -z "$HOMEBREW_PREFIX" ]; then
+    # Fallback if shellenv didn't run (e.g. brew not found)
+    export HOMEBREW_PREFIX="/opt/homebrew" 
 fi
 
 # 2. 自動把所有 gnubin 放到 PATH 最前面
 #    例如 coreutils / findutils / gnu-sed / gawk / gnu-which / 之後新裝的 gnu-*…
-for d in /opt/homebrew/opt/*/libexec/gnubin; do
+#    使用 HOMEBREW_PREFIX 避免寫死路徑
+for d in "$HOMEBREW_PREFIX"/opt/*/libexec/gnubin; do
     [ -d "$d" ] && PATH="$d:$PATH"
 done
 

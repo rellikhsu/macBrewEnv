@@ -4,7 +4,14 @@
 # 自動化設定 macOS Homebrew 環境與 bash 配置
 #
 
-set -e  # 遇到錯誤立即停止
+# 錯誤處理
+handle_error() {
+    print_error "腳本執行失敗於第 $1 行"
+    exit 1
+}
+
+# 設定錯誤捕捉
+trap 'handle_error $LINENO' ERR
 
 # 顏色定義
 RED='\033[0;31m'
@@ -46,11 +53,21 @@ check_macos() {
 # 檢查網路連線
 check_network() {
     print_info "檢查網路連線..."
-    if ! ping -c 1 -W 2 github.com > /dev/null 2>&1; then
-        print_error "無法連線到網路，請檢查網路設定"
-        exit 1
-    fi
-    print_success "網路連線正常"
+    local max_retries=3
+    local retry=0
+    
+    while [ $retry -lt $max_retries ]; do
+        if ping -c 1 -W 2 github.com > /dev/null 2>&1; then
+             print_success "網路連線正常"
+             return 0
+        fi
+        retry=$((retry + 1))
+        print_warning "網路連線失敗，重試 ($retry/$max_retries)..."
+        sleep 2
+    done
+
+    print_error "無法連線到網路，請檢查網路設定"
+    exit 1
 }
 
 # 檢查並安裝 Homebrew
@@ -65,8 +82,18 @@ install_homebrew() {
         print_info "開始安裝 Homebrew..."
         print_warning "安裝過程中可能需要輸入您的管理員密碼"
         
-        # 使用非互動模式安裝 Homebrew
-        NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        # 使用更安全的安裝方式：下載到暫存檔 -> 執行
+        # 避免 curl 過程中断導致執行不完整指令
+        INSTALL_SCRIPT=$(mktemp)
+        print_info "下載 Homebrew 安裝腳本..."
+        if ! curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh -o "$INSTALL_SCRIPT"; then
+            print_error "下載 Homebrew 安裝腳本失敗"
+            rm -f "$INSTALL_SCRIPT"
+            exit 1
+        fi
+        
+        NONINTERACTIVE=1 /bin/bash "$INSTALL_SCRIPT"
+        rm -f "$INSTALL_SCRIPT"
         
         # 設定 Homebrew 環境變數
         if [ -x /opt/homebrew/bin/brew ]; then
@@ -76,7 +103,7 @@ install_homebrew() {
             BREW_PREFIX="/usr/local"
             eval "$(/usr/local/bin/brew shellenv)"
         else
-            print_error "Homebrew 安裝失敗"
+            print_error "Homebrew 安裝後找不到執行檔"
             exit 1
         fi
         

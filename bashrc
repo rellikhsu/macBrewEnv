@@ -6,17 +6,28 @@ if [ -n "$BASH_VERSION" ]; then
     fi
 fi
 
-for file in /opt/homebrew/etc/profile.d/*.sh;
-	do
+# Setup HOMEBREW_PREFIX if not already set (e.g. non-interactive shell or profile skipped)
+if [ -z "$HOMEBREW_PREFIX" ]; then
+    if [ -x /opt/homebrew/bin/brew ]; then
+        eval "$(/opt/homebrew/bin/brew shellenv)"
+    elif [ -x /usr/local/bin/brew ]; then
+        eval "$(/usr/local/bin/brew shellenv)"
+    fi
+fi
+
+# Load profile.d scripts from the correct Homebrew location
+if [ -n "$HOMEBREW_PREFIX" ] && [ -d "$HOMEBREW_PREFIX/etc/profile.d" ]; then
+    for file in "$HOMEBREW_PREFIX"/etc/profile.d/*.sh; do
     	if [ -f "$file" ]; then
         	. "$file"
 		fi
 	done
+fi
 
 #bash-git-prompt
-if [ -f "/opt/homebrew/opt/bash-git-prompt/share/gitprompt.sh" ]; then
-  __GIT_PROMPT_DIR="/opt/homebrew/opt/bash-git-prompt/share"
-  source "/opt/homebrew/opt/bash-git-prompt/share/gitprompt.sh"
+if [ -n "$HOMEBREW_PREFIX" ] && [ -f "$HOMEBREW_PREFIX/opt/bash-git-prompt/share/gitprompt.sh" ]; then
+  __GIT_PROMPT_DIR="$HOMEBREW_PREFIX/opt/bash-git-prompt/share"
+  source "$HOMEBREW_PREFIX/opt/bash-git-prompt/share/gitprompt.sh"
 fi
 
 #
