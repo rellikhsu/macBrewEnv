@@ -15,12 +15,11 @@ cd macBrewEnv
 
 ## 功能特色
 
-- ✅ 自動安裝最新版 Homebrew
-- ✅ 安裝常用開發工具與套件
-- ✅ 設定新版 bash 為預設 shell
-- ✅ 自動備份現有配置檔案
-- ✅ 部署自訂的 bash 與 vim 環境
-- ✅ 支援 Apple Silicon 與 Intel Mac
+- ✅ **自動安裝最新版 Homebrew**：使用安全的暫存檔安裝模式，避免 Pipe 執行風險。
+- ✅ **常用開發工具**：自動部署 bash, git-prompt, vim, jq 等工具。
+- ✅ **強健的錯誤處理**：內建 `trap` 錯誤捕捉與網路重試機制。
+- ✅ **自動備份**：安裝前自動備份現有的設定檔 (`.profile`, `.bashrc`, `.vimrc`)。
+- ✅ **跨架構支援**：動態偵測 `Homebrew` 路徑，完美支援 **Apple Silicon** (`/opt/homebrew`) 與 **Intel** (`/usr/local`) Mac。
 
 ## 包含的配置檔案
 
