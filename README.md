@@ -25,7 +25,6 @@ cd macBrewEnv
 
 - **profile** - Bash profile 設定 (~/.profile)
   - Homebrew 環境初始化
-  - GNU 工具優先化
   - PATH 去重機制
   - 支援 Google Cloud SDK（需自行安裝）
 
