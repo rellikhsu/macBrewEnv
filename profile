@@ -13,7 +13,11 @@ fi
 # Ensure HOMEBREW_PREFIX is available for other scripts
 if [ -z "$HOMEBREW_PREFIX" ]; then
     # Fallback if shellenv didn't run (e.g. brew not found)
-    export HOMEBREW_PREFIX="/opt/homebrew" 
+    if [ "$(uname -m)" = "arm64" ]; then
+        export HOMEBREW_PREFIX="/opt/homebrew"
+    else
+        export HOMEBREW_PREFIX="/usr/local"
+    fi
 fi
 
 # 2. 使用者自訂 scripts

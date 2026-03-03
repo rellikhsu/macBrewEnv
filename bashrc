@@ -33,7 +33,6 @@ fi
 #
 export PS1="\[$(tput setaf 15)\]\u\[$(tput setaf 81)\]@\[$(tput setaf 8)\]\h\[$(tput setaf 34)\](\T)\[$(tput setaf 226)\][\w]\[$(tput sgr0)\]$"
 export LANG=en_US.UTF-8
-export LANGUAGE=en_US:us
 export GREP_COLORS='ms=01;32:mc=01;31:sl=:cx=:fn=35:ln=32:bn=32:se=36'
 export HISTFILESIZE=10000
 export HISTSIZE=10000
@@ -56,7 +55,7 @@ shopt -s hostcomplete
 unset PROMPT_COMMAND
 
 #my aliases
-case `uname` in
+case $(uname) in
         Darwin|*BSD)
         export LSCOLORS="gxfxcxdxbxegedabagacad"
         alias ls='ls -FG'

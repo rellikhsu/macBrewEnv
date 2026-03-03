@@ -4,14 +4,8 @@
 # 自動化設定 macOS Homebrew 環境與 bash 配置
 #
 
-# 錯誤處理
-handle_error() {
-    print_error "腳本執行失敗於第 $1 行"
-    exit 1
-}
-
-# 設定錯誤捕捉
-trap 'handle_error $LINENO' ERR
+# 錯誤處理：遇錯即停 (POSIX 標準)
+set -e
 
 # 顏色定義
 RED='\033[0;31m'
@@ -122,7 +116,7 @@ update_homebrew() {
 install_packages() {
     print_step "步驟 2: 安裝必要套件"
     
-    PACKAGES="bash bash-completion@2 bash-git-prompt mtr httping gping coreutils findutils inetutils mpv jq"
+    PACKAGES="bash bash-completion@2 bash-git-prompt mtr httping gping coreutils findutils inetutils mpv jq zenith"
     
     print_info "準備安裝以下套件："
     printf "  %s\n" "$PACKAGES"
