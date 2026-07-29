@@ -24,6 +24,15 @@ if [ -n "$HOMEBREW_PREFIX" ] && [ -d "$HOMEBREW_PREFIX/etc/profile.d" ]; then
 	done
 fi
 
+# Load bash completion scripts
+if [ -n "$HOMEBREW_PREFIX" ] && [ -d "$HOMEBREW_PREFIX/etc/bash_completion.d/" ]; then
+    for file in "$HOMEBREW_PREFIX"/etc/bash_completion.d/; do
+        if [ -f "$file" ]; then
+            . "$file"
+        fi
+    done
+fi
+
 #bash-git-prompt
 if [ -n "$HOMEBREW_PREFIX" ] && [ -f "$HOMEBREW_PREFIX/opt/bash-git-prompt/share/gitprompt.sh" ]; then
   __GIT_PROMPT_DIR="$HOMEBREW_PREFIX/opt/bash-git-prompt/share"
