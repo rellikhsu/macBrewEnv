@@ -40,16 +40,23 @@ cd macBrewEnv
   - UTF-8 編碼
   - 256 色支援
 
+- **claude** - Claude Code Bash completion
+  - 安裝至 `${HOMEBREW_PREFIX}/etc/bash_completion.d/claude`
+  - 動態解析目前 Claude Code 的 `--help`，支援多層 CLI subcommand
+  - Claude Code 需另行安裝
+
 ## 安裝的套件
 
 - bash - 最新版 Bash shell
 - bash-completion@2 - Bash 自動完成
 - bash-git-prompt - Git 狀態提示
 - coreutils / findutils - GNU 核心工具
-- mtr / httping / gping - 網路診斷工具
+- mtr / httping - 網路診斷工具
 - mpv - 多媒體播放器
 - jq - JSON 處理工具
 - inetutils - 網路工具集
+- codex - OpenAI Codex CLI（Homebrew cask）
+- claude-code@latest - Claude Code latest channel（Homebrew cask）
 
 ## 詳細說明
 

@@ -67,12 +67,13 @@ chmod +x setup.sh
 - `bash-git-prompt` - Git 狀態提示
 - `mtr` - 網路診斷工具
 - `httping` - HTTP ping 工具
-- `gping` - 圖形化 ping 工具
 - `coreutils` - GNU 核心工具
 - `findutils` - GNU find 工具
 - `inetutils` - 網路工具集
 - `mpv` - 多媒體播放器
 - `jq` - JSON 處理工具
+- `codex` - OpenAI Codex CLI（Homebrew cask）
+- `claude-code@latest` - Claude Code latest channel（Homebrew cask）
 
 ### 步驟 3: 將 Homebrew bash 加入到 /etc/shells
 - 檢查 `/opt/homebrew/bin/bash` 是否已在 `/etc/shells` 中
@@ -95,8 +96,11 @@ chmod +x setup.sh
 - `profile` → `~/.profile` - 包含 Homebrew 環境、GNU 工具優先化、PATH 去重機制
 - `bashrc` → `~/.bashrc` - 包含自訂 prompt、Git prompt、bash completion、別名設定
 - `vimrc` → `~/.vimrc` - 包含語法高亮、自動縮排、UTF-8 編碼
+- `claude` → `${HOMEBREW_PREFIX}/etc/bash_completion.d/claude` - 動態解析 Claude Code `--help` 的多層 Bash completion
 
 **注意**: 配置檔案中包含 Google Cloud SDK 的支援設定，但 Google Cloud SDK 不會自動安裝，需要的使用者請自行安裝。
+
+Claude Code 不會由本腳本安裝；只有在系統已另行安裝 `claude` 時，相關 completion 才會生效。
 
 ## 互動提示
 

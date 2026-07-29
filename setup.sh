@@ -116,10 +116,12 @@ update_homebrew() {
 install_packages() {
     print_step "步驟 2: 安裝必要套件"
     
-    PACKAGES="bash bash-completion@2 bash-git-prompt mtr httping gping coreutils findutils inetutils mpv jq zenith"
+    PACKAGES="bash bash-completion@2 bash-git-prompt mtr httping coreutils findutils inetutils mpv jq zenith"
+    CASKS="codex claude-code@latest"
     
     print_info "準備安裝以下套件："
-    printf "  %s\n" "$PACKAGES"
+    printf "  Formulae: %s\n" "$PACKAGES"
+    printf "  Casks: %s\n" "$CASKS"
     
     for pkg in $PACKAGES; do
         if brew list "$pkg" > /dev/null 2>&1; then
@@ -127,6 +129,15 @@ install_packages() {
         else
             print_info "安裝 $pkg..."
             brew install "$pkg"
+        fi
+    done
+
+    for cask in $CASKS; do
+        if brew list --cask "$cask" > /dev/null 2>&1; then
+            print_warning "Cask $cask 已安裝，跳過"
+        else
+            print_info "安裝 Cask $cask..."
+            brew install --cask "$cask"
         fi
     done
     
@@ -220,7 +231,10 @@ ensure_repo() {
     SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
     
     # 檢查必要檔案是否存在
-    if [ -f "$SCRIPT_DIR/profile" ] && [ -f "$SCRIPT_DIR/bashrc" ] && [ -f "$SCRIPT_DIR/vimrc" ]; then
+    if [ -f "$SCRIPT_DIR/profile" ] &&
+       [ -f "$SCRIPT_DIR/bashrc" ] &&
+       [ -f "$SCRIPT_DIR/vimrc" ] &&
+       [ -f "$SCRIPT_DIR/claude" ]; then
         print_success "找到所有必要的配置檔案"
         REPO_DIR="$SCRIPT_DIR"
     else
@@ -262,6 +276,15 @@ copy_config_files() {
     
     cp "$REPO_DIR/vimrc" "$HOME/.vimrc"
     print_success "已複製 vimrc -> ~/.vimrc"
+
+    CLAUDE_COMPLETION_DIR="$BREW_PREFIX/etc/bash_completion.d"
+    if [ ! -d "$CLAUDE_COMPLETION_DIR" ]; then
+        print_error "找不到 $CLAUDE_COMPLETION_DIR，請確認 bash-completion@2 已安裝"
+        exit 1
+    fi
+
+    install -m 0644 "$REPO_DIR/claude" "$CLAUDE_COMPLETION_DIR/claude"
+    print_success "已安裝 Claude completion -> $CLAUDE_COMPLETION_DIR/claude"
     
     print_success "所有配置檔案複製完成"
 }
@@ -292,6 +315,7 @@ show_completion_message() {
     printf "  - ~/.profile\n"
     printf "  - ~/.bashrc\n"
     printf "  - ~/.vimrc\n"
+    printf "  - %s/etc/bash_completion.d/claude\n" "$BREW_PREFIX"
     printf "\n"
     
     if [ -d "$HOME/.config_backup_"* ] 2>/dev/null; then

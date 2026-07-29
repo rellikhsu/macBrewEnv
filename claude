@@ -1,0 +1,81 @@
+# Bash completion for Claude Code CLI
+
+_claude_help() {
+  LC_ALL=C command claude "$@" --help 2>/dev/null
+}
+
+_claude_commands_from_help() {
+  awk '
+    /^Commands:/ { in_commands=1; next }
+    in_commands && /^  [a-z]/ {
+      count=split($1, names, "|")
+      for (i=1; i<=count; i++) print names[i]
+    }
+  '
+}
+
+_claude_candidates_from_help() {
+  awk '
+    /^Options:/  { section="options"; next }
+    /^Commands:/ { section="commands"; next }
+
+    section=="options" && /^  -/ {
+      for (i=1; i<=NF; i++) {
+        if ($i ~ /^--?[A-Za-z][A-Za-z0-9-]*,?$/) {
+          gsub(/,/, "", $i)
+          print $i
+        }
+      }
+    }
+
+    section=="commands" && /^  [a-z]/ {
+      count=split($1, names, "|")
+      for (i=1; i<=count; i++) print names[i]
+    }
+  ' | sort -u
+}
+
+_claude_completion() {
+  local current help_text commands word candidate candidates matched
+  local -a command_path=()
+  local index
+
+  current="${COMP_WORDS[COMP_CWORD]}"
+  help_text="$(_claude_help)" || return 0
+
+  # 只沿著 --help 中已識別的 command 往下走，
+  # 避免 completion 意外執行帶有副作用的操作。
+  for ((index=1; index<COMP_CWORD; index++)); do
+    word="${COMP_WORDS[index]}"
+    [[ "$word" == -* ]] && continue
+
+    commands="$(printf '%s\n' "$help_text" |
+      _claude_commands_from_help)"
+
+    matched=false
+    while IFS= read -r candidate; do
+      if [[ "$candidate" == "$word" ]]; then
+        matched=true
+        break
+      fi
+    done <<< "$commands"
+
+    if [[ "$matched" == true ]]; then
+      command_path+=("$word")
+      help_text="$(
+        _claude_help "${command_path[@]}"
+      )" || return 0
+    fi
+  done
+
+  candidates="$(
+    printf '%s\n' "$help_text" |
+      _claude_candidates_from_help
+  )"
+
+  mapfile -t COMPREPLY < <(
+    compgen -W "$candidates" -- "$current"
+  )
+}
+
+complete -F _claude_completion claude
